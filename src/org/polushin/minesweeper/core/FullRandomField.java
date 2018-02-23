@@ -1,8 +1,5 @@
 package org.polushin.minesweeper.core;
 
-import org.polushin.minesweeper.core.field.Cell;
-import org.polushin.minesweeper.core.field.MineField;
-
 import java.util.Random;
 
 /**

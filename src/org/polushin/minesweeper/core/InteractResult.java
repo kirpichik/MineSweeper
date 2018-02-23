@@ -1,4 +1,4 @@
-package org.polushin.minesweeper.core.field;
+package org.polushin.minesweeper.core;
 
 import java.util.HashSet;
 import java.util.Iterator;
