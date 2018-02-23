@@ -1,4 +1,4 @@
-package org.polushin.minesweeper.core;
+package org.polushin.minesweeper.core.field;
 
 /**
  * Клетка поля.
@@ -24,7 +24,7 @@ public class Cell {
 	 * @param posY Позиция по Y.
 	 * @param isMine Является ли данная клетка миной.
 	 */
-	public Cell(MineField field, int posX, int posY, boolean isMine) {
+	Cell(MineField field, int posX, int posY, boolean isMine) {
 		this.field = field;
 		this.posX = posX;
 		this.posY = posY;
@@ -56,9 +56,11 @@ public class Cell {
 
 	/**
 	 * Устанавливает или удаляет флаг на клетке.
+	 *
+	 * @return {@code true}, если флаг был установлен и {@code false}, если флаг был снят.
 	 */
-	public void changeFlagSet() {
-		flag = !flag;
+	public boolean changeFlagSet() {
+		return flag = !flag;
 	}
 
 	/**

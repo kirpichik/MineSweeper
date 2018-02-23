@@ -1,19 +1,21 @@
-package org.polushin.minesweeper.core;
+package org.polushin.minesweeper.core.field;
 
 import java.util.Random;
 
 /**
  * Генератор полностью случайного поля.
  */
-public class FullRandomField extends MineField {
+public class RandomMinesGenerator extends MineField {
 
 	private final Random random;
 
 	/**
 	 * @param width Ширина поля.
 	 * @param height Высота поля.
+	 *
+	 * @throws IllegalArgumentException Если ширина или высота не положительны.
 	 */
-	public FullRandomField(int width, int height) {
+	public RandomMinesGenerator(int width, int height) {
 		super(width, height);
 		random = new Random();
 	}
@@ -22,8 +24,10 @@ public class FullRandomField extends MineField {
 	 * @param width Ширина поля.
 	 * @param height Высота поля.
 	 * @param seed Зерно для генерации поля.
+	 *
+	 * @throws IllegalArgumentException Если ширина или высота не положительны.
 	 */
-	public FullRandomField(int width, int height, long seed) {
+	public RandomMinesGenerator(int width, int height, long seed) {
 		super(width, height);
 		random = new Random(seed);
 	}

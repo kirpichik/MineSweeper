@@ -1,4 +1,4 @@
-package org.polushin.minesweeper.core;
+package org.polushin.minesweeper.core.field;
 
 /**
  * Поле игры.
@@ -10,6 +10,8 @@ public abstract class MineField {
 	/**
 	 * @param width Ширина поля.
 	 * @param height Высота поля.
+	 *
+	 * @throws IllegalArgumentException Если ширина или высота не положительные.
 	 */
 	public MineField(int width, int height) {
 		if (width <= 0 || height <= 0)

@@ -1,4 +1,4 @@
-package org.polushin.minesweeper.core;
+package org.polushin.minesweeper.core.field;
 
 /**
  * Исключение при попытке открыть клетку с миной.
