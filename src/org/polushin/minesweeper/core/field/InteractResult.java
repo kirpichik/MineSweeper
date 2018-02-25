@@ -11,17 +11,32 @@ import java.util.Set;
 public class InteractResult implements Iterable<Cell> {
 
 	private final Set<Cell> changed = new HashSet<>();
+	private final boolean explode;
 
-	InteractResult() {
-
+	/**
+	 * @param isExplode Произошел ли взрыв в результате данного действия.
+	 */
+	InteractResult(boolean isExplode) {
+		explode = isExplode;
 	}
 
+	/**
+	 * @param init Первая добавляемая клетка.
+	 */
 	InteractResult(Cell init) {
+		explode = false;
 		changed.add(init);
 	}
 
 	void addCell(Cell cell) {
 		changed.add(cell);
+	}
+
+	/**
+	 * @return Произошел ли взрыв в результате данного действия.
+	 */
+	public boolean isExplode() {
+		return explode;
 	}
 
 	@Override

@@ -12,23 +12,24 @@ public class Cell {
 
 	private final MineField field;
 
-	final boolean isMine;
+	final boolean mine;
 
 	private int mineNeighbors;
 	private boolean opened;
 	private boolean flag;
+	private int nearFlags;
 
 	/**
 	 * @param field Игровое поле на котором находится клетка.
 	 * @param posX Позиция по X.
 	 * @param posY Позиция по Y.
-	 * @param isMine Является ли данная клетка миной.
+	 * @param mine Является ли данная клетка миной.
 	 */
-	Cell(MineField field, int posX, int posY, boolean isMine) {
+	Cell(MineField field, int posX, int posY, boolean mine) {
 		this.field = field;
 		this.posX = posX;
 		this.posY = posY;
-		this.isMine = isMine;
+		this.mine = mine;
 	}
 
 	/**
@@ -55,12 +56,41 @@ public class Cell {
 	}
 
 	/**
+	 * @return Отмечена ли данная клетка как переполненная.
+	 */
+	public boolean isFlagsOverflow() {
+		return opened && !mine && nearFlags > mineNeighbors;
+	}
+
+	/**
+	 * Добавляет флаг-сосед.
+	 */
+	void addNearFlag() {
+		nearFlags++;
+	}
+
+	/**
+	 * Удаляет флаг-сосед.
+	 */
+	void removeNearFlag() {
+		if (nearFlags != 0)
+			nearFlags--;
+	}
+
+	/**
 	 * Устанавливает или удаляет флаг на клетке.
 	 *
-	 * @return {@code true}, если флаг был установлен и {@code false}, если флаг был снят.
+	 * @return Результат взаимодействия с полем.
 	 */
-	public boolean changeFlagSet() {
-		return flag = !flag;
+	public InteractResult changeFlagSet() {
+		if (field.isGameOver())
+			return new InteractResult(true);
+		if (opened || field.isGameWon())
+			return new InteractResult(false);
+		flag = !flag;
+		InteractResult result = new InteractResult(this);
+		field.updateNearestFlags(this, result);
+		return result;
 	}
 
 	/**
@@ -71,18 +101,24 @@ public class Cell {
 	}
 
 	/**
+	 * @return {@code true} только если на клетке установлена мина и она открыта.
+	 */
+	public boolean isMine() {
+		return opened && mine;
+	}
+
+	/**
 	 * Открывает клетку.
 	 *
-	 * @return Список обновленных клеток после открытия данной.
-	 *
-	 * @throws MineExplosionException При попытке открыть клетку с миной.
+	 * @return Результат взаимодействия с полем.
 	 */
-	public InteractResult open() throws MineExplosionException {
+	public InteractResult open() {
 		if (opened)
-			return new InteractResult();
-		if (isMine)
-			throw new MineExplosionException();
+			return new InteractResult(false);
+		if (mine)
+			return field.explosion();
 		opened = true;
+		flag = false;
 		InteractResult result = new InteractResult(this);
 		field.updateNearestCells(result, posX, posY);
 		return result;
@@ -91,12 +127,19 @@ public class Cell {
 	/**
 	 * Если на клетке не находится мина, открывает клетку и пытается открыть своих соседей.
 	 */
-	void open(InteractResult result) {
-		if (isMine || opened)
+	void tryToOpen(InteractResult result) {
+		if (mine || opened)
 			return;
 		opened = true;
 		result.addCell(this);
 		field.updateNearestCells(result, posX, posY);
+	}
+
+	/**
+	 * Только открывает клетку.
+	 */
+	void openExactly() {
+		opened = true;
 	}
 
 	@Override

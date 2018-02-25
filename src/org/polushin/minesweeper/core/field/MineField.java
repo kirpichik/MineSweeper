@@ -7,6 +7,9 @@ public abstract class MineField {
 
 	protected final Cell[][] field;
 
+	private boolean explode;
+	private boolean isWon;
+
 	/**
 	 * @param width Ширина поля.
 	 * @param height Высота поля.
@@ -38,11 +41,26 @@ public abstract class MineField {
 	 * @return Выиграна ли игра.
 	 */
 	public boolean isGameWon() {
+		if (isWon)
+			return true;
+		if (explode)
+			return false;
+
+		if (field[0][0] == null)
+			return false;
+
 		for (Cell[] line : field)
 			for (Cell cell : line)
-				if (!cell.isOpened() || cell.isMine && !cell.isFlagSet())
+				if (!cell.isOpened() && !cell.isFlagSet())
 					return false;
-		return true;
+		return isWon = true;
+	}
+
+	/**
+	 * @return Проиграна ли игра.
+	 */
+	public boolean isGameOver() {
+		return explode;
 	}
 
 	/**
@@ -71,11 +89,48 @@ public abstract class MineField {
 	 * Обновляет соседей клетки при ее открытии.
 	 */
 	void updateNearestCells(InteractResult result, int x, int y) {
-		for (int i = x - 1; i <= x + 1; i++)
-			if (i > 0 && i < getWidth())
-				for (int j = y - 1; j <= y + 1; j++)
-					if (j > 0 && j < getHeight())
-						field[i][j].open(result);
+		if (x != 0)
+			field[x - 1][y].tryToOpen(result);
+		if (x + 1 != getWidth())
+			field[x + 1][y].tryToOpen(result);
+		if (y != 0)
+			field[x][y - 1].tryToOpen(result);
+		if (y + 1 != getHeight())
+			field[x][y + 1].tryToOpen(result);
+	}
+
+	/**
+	 * Открывает все клетки поля, кроме правильно помеченных флагом, в результате взрыва.
+	 *
+	 * @return Все клетки поля.
+	 */
+	InteractResult explosion() {
+		explode = true;
+		InteractResult result = new InteractResult(true);
+		for (Cell[] line : field)
+			for (Cell cell : line) {
+				cell.openExactly();
+				result.addCell(cell);
+			}
+		return result;
+	}
+
+	/**
+	 * Обновляет счетчики флагов у соседних клеток.
+	 *
+	 * @param cell Изменившаясяя клетка.
+	 */
+	void updateNearestFlags(Cell cell, InteractResult result) {
+		for (int i = cell.posX - 1; i <= cell.posX + 1; i++)
+			if (i >= 0 && i < getWidth())
+				for (int j = cell.posY - 1; j <= cell.posY + 1; j++)
+					if (j >= 0 && j < getHeight()) {
+						if (cell.isFlagSet())
+							field[i][j].addNearFlag();
+						else
+							field[i][j].removeNearFlag();
+						result.addCell(field[i][j]);
+					}
 	}
 
 	/**
@@ -84,14 +139,10 @@ public abstract class MineField {
 	private void init(int startX, int startY) {
 		generate(startX, startY);
 
-		// Отмечаем кол-во соседей и создаем оставшиеся клетки.
+		// Омечаем кол-во соседей
 		for (int i = 0; i < field.length; i++)
-			for (int j = 0; j < field[i].length; i++) {
-				Cell cell = field[i][j];
-				if (cell == null)
-					field[i][j] = cell = new Cell(this, i, j, Cell.EMPTY);
-				cell.setMineNeighbors(countMinesAround(i, j));
-			}
+			for (int j = 0; j < field[i].length; j++)
+				field[i][j].setMineNeighbors(countMinesAround(i, j));
 	}
 
 	/**
@@ -99,16 +150,16 @@ public abstract class MineField {
 	 * Если на клетке уже есть мина, будет возвращено 0.
 	 */
 	private int countMinesAround(int x, int y) {
-		if (field[x][y].isMine)
+		if (field[x][y].mine)
 			return 0;
 
 		int around = 0;
 
 		for (int i = x - 1; i <= x + 1; i++)
-			if (i > 0 && i < getWidth())
+			if (i >= 0 && i < getWidth())
 				for (int j = y - 1; j <= y + 1; j++)
-					if (j > 0 && j < getHeight())
-						around += field[i][j].isMine ? 1 : 0;
+					if (j >= 0 && j < getHeight())
+						around += field[i][j].mine ? 1 : 0;
 
 		return around;
 	}
