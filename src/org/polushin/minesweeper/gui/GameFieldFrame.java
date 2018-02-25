@@ -15,6 +15,7 @@ public class GameFieldFrame extends JPanel {
 	private static final Font STATE_FONT = new Font("Arial", Font.BOLD, 40);
 
 	private final GameHandler game;
+	private final GameStatsDisplay stats;
 
 	private CellButton[][] buttons;
 	private State gameState;
@@ -22,9 +23,12 @@ public class GameFieldFrame extends JPanel {
 	/**
 	 * @param game Основной объект игры.
 	 */
-	public GameFieldFrame(GameHandler game) {
+	public GameFieldFrame(GameHandler game, GameStatsDisplay statsDisplay) {
 		this.game = game;
-		reinitNewSize(game.getWidth(), game.getHeight());
+		this.stats = statsDisplay;
+		statsDisplay.resetGame(game.getMinesCount());
+		statsDisplay.setNick(game.getNick());
+		initNewSize(game.getWidth(), game.getHeight());
 	}
 
 	/**
@@ -36,7 +40,18 @@ public class GameFieldFrame extends JPanel {
 	 */
 	public void restartGame(int mines, int width, int height) {
 		game.restartGame(mines, width, height);
-		reinitNewSize(width, height);
+		stats.resetGame(mines);
+		initNewSize(width, height);
+	}
+
+	/**
+	 * Устанавливает новый ник игрока.
+	 *
+	 * @param nick Новый ник.
+	 */
+	public void setNick(String nick) {
+		game.setNick(nick);
+		stats.setNick(nick);
 	}
 
 	/**
@@ -49,18 +64,21 @@ public class GameFieldFrame extends JPanel {
 	 */
 	public void restartGame(int mines, int width, int height, long seed) {
 		game.restartGame(mines, width, height, seed);
-		reinitNewSize(width, height);
+		initNewSize(width, height);
 	}
 
-	private void reinitNewSize(int width, int height) {
+	private void initNewSize(int width, int height) {
+		removeAll();
 		gameState = State.NONE;
-		setSize(width * CellButton.SIDE_SIZE, height * CellButton.SIDE_SIZE);
+		setSize(height * CellButton.SIDE_SIZE, width * CellButton.SIDE_SIZE);
 		buttons = new CellButton[width][height];
 		setLayout(new GridLayout(width, height));
 
 		for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 				add(buttons[i][j] = new CellButton(this, i, j));
+		validate();
+		repaint();
 	}
 
 	/**
@@ -125,7 +143,14 @@ public class GameFieldFrame extends JPanel {
 	void flagCell(int x, int y) {
 		if (game.isGameWon() || game.isGameOver())
 			return;
+
+		int flags = game.getFlagsCount();
 		update(game.markCell(x, y));
+
+		if (flags > game.getFlagsCount())
+			stats.removeFlag();
+		else if (flags < game.getFlagsCount())
+			stats.setFlag();
 
 		if (game.isGameWon()) {
 			gameState = State.WIN;

@@ -18,9 +18,9 @@ import java.util.List;
  */
 public class GameHandler {
 
-	public static final int DEFAULT_WIDTH = 20;
-	public static final int DEFAULT_HEIGHT = 20;
-	public static final int DEFAULT_MINES_COUNT = 200;
+	public static final int DEFAULT_WIDTH = 10;
+	public static final int DEFAULT_HEIGHT = 10;
+	public static final int DEFAULT_MINES_COUNT = 10;
 
 	private static final Gson GSON;
 
@@ -80,6 +80,20 @@ public class GameHandler {
 	 */
 	public int getHeight() {
 		return game.getHeight();
+	}
+
+	/**
+	 * @return Кол-во установленных мин.
+	 */
+	public int getMinesCount() {
+		return game.getMinesCount();
+	}
+
+	/**
+	 * @return Кол-во выставленных флагов.
+	 */
+	public int getFlagsCount() {
+		return game.getFlagsCount();
 	}
 
 	/**
@@ -203,8 +217,18 @@ public class GameHandler {
 			return;
 		resultRecorded = true;
 		timer.stopTimer();
-		// TODO - сортировка результатов
-		scores.add(new PlayerScore(nick, game.getWidth() * game.getHeight(), timer.getTimePassed()));
+
+		PlayerScore score = new PlayerScore(nick, game.getWidth() * game.getHeight(), timer.getTimePassed());
+
+		// TODO - сортировка по размерам поля?
+		int i = 0;
+		for (; i < scores.size(); i++) {
+			PlayerScore sc = scores.get(i);
+			if (sc.time > score.time)
+				break;
+		}
+
+		scores.add(i, score);
 		saveScores();
 	}
 

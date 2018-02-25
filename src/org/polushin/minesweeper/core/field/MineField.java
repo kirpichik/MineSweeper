@@ -6,9 +6,11 @@ package org.polushin.minesweeper.core.field;
 public abstract class MineField {
 
 	protected final Cell[][] field;
+	protected int minesCount;
 
 	private boolean explode;
 	private boolean isWon;
+	private int flags;
 
 	/**
 	 * @param width Ширина поля.
@@ -20,6 +22,13 @@ public abstract class MineField {
 		if (width <= 0 || height <= 0)
 			throw new IllegalArgumentException("Width and height must be greater than zero!");
 		field = new Cell[width][height];
+	}
+
+	/**
+	 * @return Кол-во установленных мин.
+	 */
+	public int getMinesCount() {
+		return minesCount;
 	}
 
 	/**
@@ -78,6 +87,13 @@ public abstract class MineField {
 	}
 
 	/**
+	 * @return Кол-во выставленных флагов.
+	 */
+	public int getFlagsCount() {
+		return flags;
+	}
+
+	/**
 	 * Генерирует мины на поле с учетом первого хода игрока.
 	 *
 	 * @param startX Первый ход игрока по X.
@@ -121,6 +137,8 @@ public abstract class MineField {
 	 * @param cell Изменившаясяя клетка.
 	 */
 	void updateNearestFlags(Cell cell, InteractResult result) {
+		flags += cell.isFlagSet() ? 1 : -1;
+
 		for (int i = cell.posX - 1; i <= cell.posX + 1; i++)
 			if (i >= 0 && i < getWidth())
 				for (int j = cell.posY - 1; j <= cell.posY + 1; j++)

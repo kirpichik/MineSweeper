@@ -59,6 +59,7 @@ public class CellButton extends JButton {
 				setBackground(cell.isFlagSet() ? Color.GREEN : Color.YELLOW);
 				setIcon(MINE_ICON);
 			} else if (cell.getMineNeighbors() > 0) {
+				setIcon(null);
 				setText(String.valueOf(cell.getMineNeighbors()));
 				setFont(TEXT_FONT);
 				setForeground(getNumberColor(cell.getMineNeighbors()));

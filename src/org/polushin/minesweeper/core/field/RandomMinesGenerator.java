@@ -8,7 +8,6 @@ import java.util.Random;
 public class RandomMinesGenerator extends MineField {
 
 	private final Random random;
-	private final int mines;
 
 	/**
 	 * @param mines Кол-во мин на поле.
@@ -26,7 +25,7 @@ public class RandomMinesGenerator extends MineField {
 			throw new IllegalArgumentException(
 					"Cannot place " + mines + " mines to " + width + "x" + height + "field.");
 		random = new Random();
-		this.mines = mines;
+		this.minesCount = mines;
 	}
 
 	/**
@@ -45,7 +44,7 @@ public class RandomMinesGenerator extends MineField {
 		if (width * height <= mines)
 			throw new IllegalArgumentException(
 					"Cannot place " + mines + " mines to " + width + "x" + height + "field.");
-		this.mines = mines;
+		this.minesCount = mines;
 		random = new Random(seed);
 	}
 
@@ -53,7 +52,7 @@ public class RandomMinesGenerator extends MineField {
 	protected void generate(int startX, int startY) {
 		field[startX][startY] = new Cell(this, startX, startY, Cell.EMPTY);
 
-		for (int placed = 0; placed < mines; placed++) {
+		for (int placed = 0; placed < minesCount; placed++) {
 			int x = random.nextInt(getWidth());
 			int y = random.nextInt(getHeight());
 			if (field[x][y] != null) // Клетка не пуста, ищем ближайшую пустую

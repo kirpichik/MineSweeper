@@ -20,6 +20,6 @@ public class PlayerScore {
 
 	@Override
 	public String toString() {
-		return String.format("%s -- Square: %d, Time: %dsec", nick, square, time);
+		return String.format("%s — Square: %d, Time: %dsec", nick, square, time);
 	}
 }
