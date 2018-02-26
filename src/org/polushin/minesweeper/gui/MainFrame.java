@@ -87,7 +87,7 @@ public class MainFrame extends JFrame {
 		setVisible(true);
 	}
 
-	private void pressRestart() {
+	void pressRestart() {
 		gameField.restartGame(settingsPanel.getMinesCount(), settingsPanel.getUserWidth(),
 		                      settingsPanel.getUserHeight());
 		gameField.setNick(settingsPanel.getNick());
@@ -110,7 +110,8 @@ public class MainFrame extends JFrame {
 	 * Изменяет размеры окна при создании нового поля.
 	 */
 	private void resizeWindow() {
-		setSize(gameField.getWidth() + gameStats.getMaxWidth() + 25, gameField.getHeight() + 30);
+		setSize(gameField.getWidth() + gameStats.getMaxWidth() + 35, gameField.getHeight() + 45);
+		setMinimumSize(new Dimension(getWidth(), getHeight()));
 	}
 
 	/**

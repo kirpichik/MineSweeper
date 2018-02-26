@@ -57,7 +57,7 @@ public class RandomMinesGenerator extends MineField {
 			int y = random.nextInt(getHeight());
 			if (field[x][y] != null) // Клетка не пуста, ищем ближайшую пустую
 				while (true) {
-					if (field[x][y] == null && x != startX && y != startY) // Нашли пустую клетку
+					if (field[x][y] == null) // Нашли пустую клетку
 						break;
 
 					y++;

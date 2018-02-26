@@ -46,6 +46,7 @@ public class CellButton extends JButton {
 		this.field = field;
 		addMouseListener(new InteractListener());
 		setBorder(RAISED_BORDER);
+		setBackground(Color.WHITE);
 	}
 
 	/**
